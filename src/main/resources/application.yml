@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: userservice
+
+  datasource:
+
+    username: postgres
+    password: '#Arey2005vro'
+    driver-class-name: org.postgresql.Driver
+
+    url: jdbc:postgresql://localhost:3000/fitness_user_db
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+
+    show-sql: true
