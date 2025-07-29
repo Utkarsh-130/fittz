@@ -4,48 +4,56 @@ import com.fitness.userservice.dto.RegisterRequest;
 import com.fitness.userservice.dto.UserResponse;
 import com.fitness.userservice.model.User;
 import com.fitness.userservice.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
-public class UserService {
+public class UserService { 
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repository;
 
-    @Transactional
-    public UserResponse register(RegisterRequest request) {
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    public UserResponse register(@Valid RegisterRequest request) {
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(request.getPassword());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
 
-        User savedUser = userRepository.save(user);
+        User savedUser = repository.save(user);
 
-        return mapToUserResponse(savedUser);
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(savedUser.getId());
+        userResponse.setPassword(savedUser.getPassword());
+        userResponse.setEmail(savedUser.getEmail());
+        userResponse.setFirstName(savedUser.getFirstName());
+        userResponse.setLastName(savedUser.getLastName());
+        userResponse.setCreatedAt(savedUser.getCreatedAt());
+        userResponse.setUpdatedAt(savedUser.getUpdatedAt());
+
+        return userResponse;
     }
 
-    @Transactional(readOnly = true)
-    public UserResponse getUserProfile(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        return mapToUserResponse(user);
-    }
+    public UserResponse getUserProfile(String userId) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-    private UserResponse mapToUserResponse(User user) {
-        UserResponse response = new UserResponse();
-        response.setId(user.getId());
-        response.setEmail(user.getEmail());
-        response.setFirstName(user.getFirstName());
-        response.setLastName(user.getLastName());
-        response.setCreatedAt(user.getCreatedAt());
-        response.setUpdatedAt(user.getUpdatedAt());
-        return response;
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        userResponse.setCreatedAt(user.getCreatedAt());
+        userResponse.setUpdatedAt(user.getUpdatedAt());
+
+        return userResponse;
     }
 }
