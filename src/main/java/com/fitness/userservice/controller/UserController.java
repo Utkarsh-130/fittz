@@ -18,7 +18,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/{userID}")
+    @GetMapping("/{userID}")
     public ResponseEntity<UserResponse> getUserProfile(@Valid String userID) {
 
         return  ResponseEntity.ok(userService.getUserProfile(UUID.fromString(userID)));
