@@ -1,25 +1,14 @@
-package model;
+package com.fitness.activityservice.model;
 
 public enum ActivityType {
     RUNNING,
+    WALKING,
     CYCLING,
     SWIMMING,
-    WALKING,
-    HIKING,
+    WEIGHT_TRAINING,
     YOGA,
-    TABLE_TENNIS,
-    GYM_WORKOUT,
-    DANCE,
-    TEAM_SPORTS,
-    MARTIAL_ARTS,
-    OTHER;
-
-    public static ActivityType fromString(String type) {
-        try {
-            return ActivityType.valueOf(type.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return OTHER; // Default to OTHER if the type is not recognized
-        }
-    }
-
+    HIIT,
+    CARDIO,
+    STRETCHING,
+    OTHER
 }
